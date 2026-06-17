@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Zero-dependency, high-performance WebSocket client for MonkeysLegion.",
   "main": "src/monkeys-sockets.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest"
