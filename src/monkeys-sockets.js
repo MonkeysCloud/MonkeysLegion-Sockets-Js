@@ -87,10 +87,13 @@
             if (this.socket && this.socket.readyState === 1) return;
 
             try {
-                // Pass protocols if defined, and options for Node.js environments (like headers/origin)
                 const protocols = this.options.protocols || undefined;
-                
-                this.socket = new WebSocket(this.url, protocols, this.options.socketOptions);
+                const isBrowser = typeof window !== 'undefined' || typeof self !== 'undefined';
+                if (isBrowser) {
+                    this.socket = new WebSocket(this.url, protocols);
+                } else {
+                    this.socket = new WebSocket(this.url, protocols, this.options.socketOptions);
+                }
                 this.socket.binaryType = 'arraybuffer';
 
                 this.socket.onopen = (e) => this._onOpen(e);
