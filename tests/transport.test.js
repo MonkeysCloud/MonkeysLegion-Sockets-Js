@@ -61,7 +61,7 @@ describe('MonkeysSocket Core', () => {
         expect(client.queue.length).toBe(0);
         expect(mockWebSocket.send).toHaveBeenCalledWith(JSON.stringify({
             event: 'test-event',
-            payload: { foo: 'bar' }
+            data: { foo: 'bar' }
         }));
     });
 
@@ -71,15 +71,32 @@ describe('MonkeysSocket Core', () => {
         
         client.on('server-event', spy);
 
-        // Simulate incoming grouped message
+        // Simulate incoming message with standardized 'data' key
         mockWebSocket.onmessage({
             data: JSON.stringify({
                 event: 'server-event',
-                payload: { hello: 'world' }
+                data: { hello: 'world' }
             })
         });
 
         expect(spy).toHaveBeenCalledWith({ hello: 'world' });
+    });
+
+    it('should handle legacy server messages using payload key', () => {
+        const client = new MonkeysSocket('ws://localhost:9000');
+        const spy = vi.fn();
+        
+        client.on('legacy-event', spy);
+
+        // Simulate incoming message with legacy 'payload' key
+        mockWebSocket.onmessage({
+            data: JSON.stringify({
+                event: 'legacy-event',
+                payload: { legacy: true }
+            })
+        });
+
+        expect(spy).toHaveBeenCalledWith({ legacy: true });
     });
 
     it('should handle reconnection on unexpected close', async () => {
